@@ -1,0 +1,5 @@
+*.o
+*.map
+*.img
+*.elf
+.vscode/*.log
