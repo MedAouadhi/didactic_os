@@ -1,25 +1,27 @@
 #include "gpio.h"
 #include "mini_uart.h"
 #include "utils.h"
-
+#include "printf.h"
 
 void main()
 {
 
     uart_init(115200);
 
-    uart_puts("\nHello World\r\n");
+    printf("Hello World\r\n");
     char msg[50] = {0};
 
     while(1) {
         memset(msg, 0, sizeof(msg));
         uart_gets(msg);
-        if (strstr((const char *)msg, (const char *)"hello\n") == 0) {
-            uart_puts("Hello back!\r\n");
-            uart_puts("Maa Salama!\r\n");
+        /* remove the last newline char */
+        msg[strlen(msg) - 1] = '\0';
+        if (strstr((const char *)msg, (const char *)"hello") == 0) {
+            printf("Hello back!\r\n");
+            printf("Maa Salama!\r\n");
             break;
         } else {
-            uart_puts("Come Again ?!\r\n");
+            printf("I did not understand: %s.\r\n", msg);
         }
     }
     while(1);

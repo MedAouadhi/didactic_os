@@ -3,7 +3,7 @@ OUT=build
 SRCS = $(wildcard $(SRC)/*.c)
 OBJS = $(patsubst src/%.c,build/%.o,$(SRCS))
 
-CFLAGS = -Wall -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -ggdb
+CFLAGS = -Wall -O0 -ffreestanding -nostdlib -nostartfiles -ggdb -Iinc
 
 all: clean kernel8.img
 

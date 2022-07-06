@@ -17,3 +17,4 @@ void uart_putc(char c);
 char uart_getc(void);
 void uart_puts(char *s);
 void uart_gets(char *s);
+void putc(void *p, char c);

@@ -83,3 +83,8 @@ void uart_gets(char *s)
         *s++ = c;
     } while(c != '\n');
 }
+/* Needed by the printf lib */
+void _putchar(char c)
+{
+    uart_putc(c);
+}
