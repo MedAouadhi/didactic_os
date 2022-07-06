@@ -5,6 +5,32 @@
     "version": "0.2.0",
     "configurations": [        
         {
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/kernel8.elf",
+            "name": "Debug with OpenOCD",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            // "overrideGDBServerStartedRegex": "",
+            "configFiles": [
+                "ftdi.cfg",
+                "rpi3.cfg"
+            ],
+            "svdFile": "${workspaceRoot}/bcm2837_lpa.svd",
+            "searchDir": [],
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "gdbTarget": "localhost:3333",
+            "postLaunchCommands": [
+                "file kernel8.elf",
+                "load",
+            ],
+            "gdbPath": "/usr/bin/gdb-multiarch",
+            "postRestartCommands": ["load"],
+            "preLaunchTask": "build"
+        },
+
+        {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
@@ -12,7 +38,9 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
-            "miDebuggerPath": "/usr/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-elf/bin/aarch64-elf-gdb",
+            // "miDebuggerPath": "/usr/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-elf/bin/aarch64-elf-gdb",
+            // "miDebuggerPath": "/usr/bin/gdb-multiarch",
+            "miDebuggerPath": "/usr/gcc-linaro-11.3.1-2022.06-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gdb",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -21,9 +49,13 @@
                 "require": true,
                 "limit": 4
              },
+             "logging" : { "trace": true, "traceResponse": true, "engineLogging": true },
             "setupCommands": [
                 {
-                    "text": "target extended-remote :3333",
+                    "text": "set target-async off"
+                },
+                {
+                    "text": "target remote :3333",
                 },
                 {
                     "text": "file kernel8.elf",
@@ -31,6 +63,7 @@
                 {
                     "text": "load",
                 }
+
             ],
             "preLaunchTask": "build"
         },
