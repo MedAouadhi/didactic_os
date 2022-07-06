@@ -1,6 +1,6 @@
 /**
  * @file gpio.c
- * @author your name (you@domain.com)
+ * @author Mohamed Aouadhi
  * @brief 
  * @version 0.1
  * @date 2022-07-05
@@ -17,11 +17,13 @@ static void gpio_get_regs(uint8_t gpio_num, gpio_ctrl_t *gpctrl)
         gpctrl->GPSET = &GPIO->GPSET0;
         gpctrl->GPCLR = &GPIO->GPCLR0;
         gpctrl->GPLEV = &GPIO->GPLEV0;
+        gpctrl->GPPUPD = &GPIO->GPPUDCLK0;
     } else {
         gpctrl->setclr_index = gpio_num - 32;
         gpctrl->GPSET = &GPIO->GPSET1;
         gpctrl->GPCLR = &GPIO->GPCLR1;
         gpctrl->GPLEV = &GPIO->GPLEV1;
+        gpctrl->GPPUPD = &GPIO->GPPUDCLK1;
     }
 
     int reg_index = gpio_num / 10;
@@ -55,7 +57,7 @@ void gpio_set(uint8_t gpio_num)
     //set the direction of the pin
     gpio_alt_func(gpio_num, OUTPUT);
     //set the gpio
-    *gpio.GPSET |= (1 << gpio.setclr_index);
+    *gpio.GPSET = *gpio.GPLEV | (1 << gpio.setclr_index);
 }
 
 void gpio_reset(uint8_t gpio_num)
@@ -65,9 +67,8 @@ void gpio_reset(uint8_t gpio_num)
     gpio_get_regs(gpio_num, &gpio);
     gpio_alt_func(gpio_num, OUTPUT);
     //set the gpio
-    *gpio.GPCLR |= (1 << gpio.setclr_index);
+    *gpio.GPCLR = ~(*gpio.GPLEV) | (1 << gpio.setclr_index);
 }
-
 
 
 bool gpio_is_set(uint8_t gpio_num)
@@ -79,4 +80,48 @@ bool gpio_is_set(uint8_t gpio_num)
         return 1;
     else
         return 0;
+}
+
+static inline void gpio_pupd_apply(gpio_ctrl_t *gpctrl)
+{
+    /* Wait 150 cycles*/
+    for (int i=0; i<150; i++) asm volatile("nop");
+
+    *gpctrl->GPPUPD |= BIT(gpctrl->setclr_index);
+
+    /* Wait 150 cycles */
+    for (int i=0; i<150; i++) asm volatile("nop");
+
+    GPIO->GPPUD = 0;
+    *gpctrl->GPPUPD = 0;
+}
+
+void gpio_pullup(uint8_t gpio_num)
+{
+    gpio_ctrl_t gpio;
+    //get the register
+    gpio_get_regs(gpio_num, &gpio);
+    /* Enable pullup control */
+    GPIO->GPPUD = 0x2;
+    gpio_pupd_apply(&gpio);
+}
+
+void gpio_pulldown(uint8_t gpio_num)
+{
+    gpio_ctrl_t gpio;
+    //get the register
+    gpio_get_regs(gpio_num, &gpio);
+    /* Enable pullup control */
+    GPIO->GPPUD = 0x1;
+    gpio_pupd_apply(&gpio);
+}
+
+void gpio_nopull(uint8_t gpio_num)
+{
+    gpio_ctrl_t gpio;
+    //get the register
+    gpio_get_regs(gpio_num, &gpio);
+    /* Enable pullup control */
+    GPIO->GPPUD = 0;
+    gpio_pupd_apply(&gpio);
 }
