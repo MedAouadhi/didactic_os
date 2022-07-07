@@ -10,10 +10,6 @@ void main()
 
     set_vbar_el2((uint32_t)&vector_table_el2);
 
-    int a;
-    a++;
-    int b;
-    b++;
     //for testing the correct setting of the vector table
     // this should generate a Data Abort (SError exception)
     //volatile int cont = *((volatile int *)0xffffffffffffffffull);
