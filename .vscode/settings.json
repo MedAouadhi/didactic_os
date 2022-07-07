@@ -5,5 +5,5 @@
         "pi3bplus.h": "c"
     },
     "cortex-debug.registerUseNaturalFormat": false,
-    "cortex-debug.variableUseNaturalFormat": true
+    "cortex-debug.variableUseNaturalFormat": false
 }

@@ -74,6 +74,7 @@ void uart_puts(char *s)
 }
 
 void uart_gets(char *s)
+
 {
     char c = '\0';
     do {
